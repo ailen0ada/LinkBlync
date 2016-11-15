@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,7 +31,7 @@ namespace LinkBlync.Host
 
         private int numberOfDevices;
         
-        private const string ConnectionString = "primarykey";
+        private const string ConnectionString = "cs";
 
         private QueueClient client;
 
@@ -65,7 +67,11 @@ namespace LinkBlync.Host
                 .Select(t =>
                 {
                     t.Value.Complete();
-                    return t.Value.GetBody<Color>();
+                    using (var sr = new StreamReader(t.Value.GetBody<Stream>()))
+                    {
+                        var val = sr.ReadToEnd();
+                        return ToColor(val);
+                    }
                 })
                 .Catch(Observable.Return(Color.FromArgb(0xff, 0xff, 0x00, 0x00)))
                 .Subscribe(c =>
@@ -86,8 +92,15 @@ namespace LinkBlync.Host
 
         private async void ResetButtonOnClick(object sender, RoutedEventArgs e)
         {
-            var message = new BrokeredMessage(Color.FromArgb(0xff, 0xff, 0xff, 0xff));
+            var message = new BrokeredMessage(new MemoryStream(Encoding.UTF8.GetBytes("#FFFFFF")), true);
             await client.SendAsync(message);
+        }
+
+        private static Color ToColor(string value)
+        {
+            var converted = ColorConverter.ConvertFromString(value);
+            if (converted != null) return (Color) converted;
+            return Color.FromRgb(0xff, 0x00, 0x00);
         }
     }
 }
