@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			xmlns:local="clr-namespace:LinkBlync.Client" 
+			x:Class="LinkBlync.Client.MainPage">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition />
+			<RowDefinition Height="2*" />
+			<RowDefinition />
+		</Grid.RowDefinitions>
+		<Label Text="Tap to send color." HorizontalOptions="Center" VerticalOptions="Center" />
+
+		<Grid Grid.Row="1" x:Name="ColorGrid" />
+
+		<StackLayout Grid.Row="2" Orientation="Vertical">
+			<Button Text="Shuffle" Clicked="ShuffleColors" />
+			<Label x:Name="StatusLabel" Text="Tap to shuffle colors." HorizontalOptions="Center" />
+		</StackLayout>
+	</Grid>
+</ContentPage>
