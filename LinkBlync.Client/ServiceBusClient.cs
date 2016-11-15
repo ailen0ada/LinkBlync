@@ -17,7 +17,7 @@ namespace LinkBlync.Client
 
         private const string sasKeyName = "sender";
 
-        private const string sasKey = "sharedkey";
+        private const string sasKey = "saskey";
 
         private static string endPoint = $"https://{nameSpace}.servicebus.windows.net/";
 
@@ -31,8 +31,7 @@ namespace LinkBlync.Client
             var token = GetSasToken();
             client.DefaultRequestHeaders.Add("Authorization", token);
 
-            var content = new StringContent(value, Encoding.UTF8);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var content = new ByteArrayContent(Encoding.UTF8.GetBytes(value));
 
             var path = endPoint + queueName + "/messages";
             return await client.PostAsync(path, content).ConfigureAwait(false);
@@ -66,7 +65,6 @@ namespace LinkBlync.Client
             if (httpClient == null)
             {
                 httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             }
             return httpClient;
         }
