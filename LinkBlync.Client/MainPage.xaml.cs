@@ -2,7 +2,6 @@
 using Xamarin.Forms;
 using System.Linq;
 using System.Windows.Input;
-using System.Diagnostics;
 
 namespace LinkBlync.Client
 {
@@ -14,15 +13,11 @@ namespace LinkBlync.Client
             sendColorCommand = new Command<string>(SendColor);
         }
 
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            ShuffleColors(this, null);
-        }
-
         private static Random rnd = new Random();
 
         private ICommand sendColorCommand;
+
+        private const string ConnectionString = "primarykey";
 
         private void ShuffleColors(object sender, System.EventArgs e)
         {
@@ -69,9 +64,18 @@ namespace LinkBlync.Client
             ColorGrid.Children.Add(parent);
         }
 
-        private void SendColor(string colorValue)
+#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
+        private async void SendColor(string colorValue)
         {
-            Debug.WriteLine(colorValue);
+            var ret = await ServiceBusClient.PostToQueueAsync(colorValue);
+            StatusLabel.Text = $"{ret.StatusCode} - {colorValue}";
+        }
+#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            ShuffleColors(this, null);
         }
     }
 }
