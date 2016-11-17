@@ -31,7 +31,7 @@ namespace LinkBlync.Host
 
         private int numberOfDevices;
         
-        private const string ConnectionString = "cs";
+        private const string ConnectionString = "Endpoint=sb://link-blync.servicebus.windows.net/;SharedAccessKeyName=subscriber;SharedAccessKey=Asyv1Qr5g/efQ6JAexYQdWDz0bfphjDrE5JuIV12qPk=;EntityPath=colors";
 
         private QueueClient client;
 

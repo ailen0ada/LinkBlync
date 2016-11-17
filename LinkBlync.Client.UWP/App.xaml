@@ -1,0 +1,8 @@
+﻿<Application
+    x:Class="LinkBlync.Client.UWP.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:LinkBlync.Client.UWP"
+    RequestedTheme="Light">
+
+</Application>
