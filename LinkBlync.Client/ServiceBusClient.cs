@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LinkBlync.Client
 {
-    public class ServiceBusClient : IDisposable
+    public class ServiceBusClient
     {
         private const string nameSpace = "link-blync";
 
@@ -17,24 +17,26 @@ namespace LinkBlync.Client
 
         private const string sasKeyName = "sender";
 
-        private const string sasKey = "saskey";
+        private const string sasKey = "kboYGPCcafkY/mHGV+gkVO/sBJTYiuc0Krxlz1RAmak=";
 
         private static string endPoint = $"https://{nameSpace}.servicebus.windows.net/";
 
         public static async Task<HttpResponseMessage> PostToQueueAsync(string value)
         {
-            var client = GetClient();
-            client.BaseAddress = new Uri(endPoint);
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Accept.Clear();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(endPoint);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Clear();
 
-            var token = GetSasToken();
-            client.DefaultRequestHeaders.Add("Authorization", token);
+                var token = GetSasToken();
+                client.DefaultRequestHeaders.Add("Authorization", token);
 
-            var content = new ByteArrayContent(Encoding.UTF8.GetBytes(value));
+                var content = new ByteArrayContent(Encoding.UTF8.GetBytes(value));
 
-            var path = endPoint + queueName + "/messages";
-            return await client.PostAsync(path, content).ConfigureAwait(false);
+                var path = endPoint + queueName + "/messages";
+                return await client.PostAsync(path, content).ConfigureAwait(false);
+            }
         }
 
         private static string GetSasToken()
@@ -57,18 +59,5 @@ namespace LinkBlync.Client
             var sinceEpoch = DateTime.UtcNow - new DateTime(1970, 1, 1);
             return Convert.ToString((int)sinceEpoch.TotalSeconds + 3600);
         }
-
-        private static HttpClient httpClient;
-
-        private static HttpClient GetClient()
-        {
-            if (httpClient == null)
-            {
-                httpClient = new HttpClient();
-            }
-            return httpClient;
-        }
-
-        public void Dispose() => httpClient?.Dispose();
     }
 }

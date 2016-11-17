@@ -1,6 +1,7 @@
 ﻿using System;
 using Xamarin.Forms;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace LinkBlync.Client
@@ -10,7 +11,7 @@ namespace LinkBlync.Client
         public MainPage()
         {
             InitializeComponent();
-            sendColorCommand = new Command<string>(SendColor);
+            sendColorCommand = new Command<string>(async c => await SendColor(c));
         }
 
         private static Random rnd = new Random();
@@ -63,14 +64,12 @@ namespace LinkBlync.Client
             }
             ColorGrid.Children.Add(parent);
         }
-
-#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
-        private async void SendColor(string colorValue)
+        
+        private async Task SendColor(string colorValue)
         {
             var ret = await ServiceBusClient.PostToQueueAsync(colorValue);
             StatusLabel.Text = $"{ret.StatusCode} - {colorValue}";
         }
-#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
 
         protected override void OnAppearing()
         {
